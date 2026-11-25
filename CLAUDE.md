@@ -46,8 +46,8 @@
 
 0. API 선택·키 발급·환경변수 ✅ 완료
 1. 프로젝트 폴더, Git 저장소, 브랜치 ✅ 완료
-2. `subprocess`로 git status/diff 수집, 변경 없음 처리 ← **여기부터 진행 중**
-3. AI API를 REST(`requests`)로 호출, 응답 처리, 예외 대응
+2. `subprocess`로 git status/diff 수집, 변경 없음 처리 ✅ 완료
+3. AI API를 REST(`requests`)로 호출, 응답 처리, 예외 대응 ← **다음에 여기부터**
 4. `argparse`로 commit/pr 명령과 옵션
 5. 커밋 메시지 프롬프트 설계
 6. PR 제목/본문 프롬프트 설계
@@ -65,6 +65,28 @@
 - 작업 환경은 컴퓨터를 껐다 켜면 홈 폴더까지 전부 초기화된다. 코드는 GitHub로만 보존되고,
   `~/.zshrc`의 키는 사라지므로 매번 복구용 한 줄(`echo 'export AI_API_KEY="..."' >> ~/.zshrc && source ~/.zshrc`)로
   다시 등록한다. 키는 사용자가 비공개 메모에 따로 보관하며, 저장소·채팅에 절대 올리지 않는다.
+
+## 세션 시작 시 할 일 (환경이 초기화되어 있을 수 있음)
+
+작업 환경은 껐다 켜면 홈 폴더까지 전부 지워진다. 새 세션이 시작되면 사용자가 요청하지 않아도
+먼저 아래를 점검하고, 빠진 것만 사용자에게 안내한다. (키 값은 절대 채팅·저장소에 올리지 않는다.)
+
+1. 이 저장소를 clone해서 VS Code 터미널에서 `code .`로 열었는가 (그래야 이 파일을 읽고 환경변수를 물려받는다)
+2. `AI_API_KEY` 환경변수가 설정됐는가 — 값을 출력하지 말고 `bool(os.environ.get("AI_API_KEY"))`로만 확인.
+   없으면 사용자의 비공개 메모에 있는 키로: `echo 'export AI_API_KEY="키"' >> ~/.zshrc && source ~/.zshrc`
+3. Git 사용자 설정: `git config --global user.name "최현준"` / `git config --global user.email "gusrb8983@gmail.com"`
+4. push 로그인: VS Code 터미널에서 push할 때 뜨는 깃허브 승인 창을 승인 (Claude의 터미널은 로그인이 안 될 수 있다.
+   이 경우 push는 VS Code 터미널에서 하게 한다). `brew`는 `/usr/local` 권한 문제로 설치가 막혀 있다.
+5. 초기화가 안 됐다면 위는 건너뛰고 `main`에서 `git pull`만 한다.
+
+그 후 로드맵의 "다음에 여기부터" 단계에서 이어간다.
+
+## 작업 흐름 규칙
+
+- `main`에서 직접 작업하지 않는다. `종류/내용` 브랜치(예: `feature/collect-git-changes`, 영어 소문자와 `-`) → commit(`종류: 내용`, 제목 50자 이내)
+  → push → 깃허브에서 PR(Why/What/How to Test) → merge → 로컬 `main` pull → 브랜치 로컬·원격 삭제.
+- PR 생성은 사용자가 깃허브 웹에서 한다 (`gh` 미설치). Claude는 PR 제목·본문 문구를 만들어 준다.
+- 성격이 다른 변경은 commit을 나눈다.
 
 ## 진행하며 갱신할 것
 
